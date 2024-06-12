@@ -1,1 +1,665 @@
-{"metadata":{"kernelspec":{"language":"python","display_name":"Python 3","name":"python3"},"language_info":{"name":"python","version":"3.10.13","mimetype":"text/x-python","codemirror_mode":{"name":"ipython","version":3},"pygments_lexer":"ipython3","nbconvert_exporter":"python","file_extension":".py"},"kaggle":{"accelerator":"none","dataSources":[{"sourceId":8663685,"sourceType":"datasetVersion","datasetId":5191199},{"sourceId":8663717,"sourceType":"datasetVersion","datasetId":5191230},{"sourceId":8663826,"sourceType":"datasetVersion","datasetId":5191303},{"sourceId":8663957,"sourceType":"datasetVersion","datasetId":5191400},{"sourceId":8664416,"sourceType":"datasetVersion","datasetId":5191764}],"dockerImageVersionId":30732,"isInternetEnabled":false,"language":"python","sourceType":"notebook","isGpuEnabled":false}},"nbformat_minor":4,"nbformat":4,"cells":[{"cell_type":"code","source":"import pandas as pd\nimport joblib\nfrom sklearn.feature_extraction.text import TfidfVectorizer\nfrom sklearn.model_selection import train_test_split\nfrom sklearn.ensemble import RandomForestClassifier\nfrom sklearn.metrics import accuracy_score\nimport tensorflow as tf\nfrom tensorflow.keras.models import Sequential\nfrom tensorflow.keras.layers import Dense\nfrom tensorflow.keras.callbacks import EarlyStopping\n# Load the CSV file\nprint(\"Loading CSV file...\")\nfile_path = '/kaggle/input/raw-fu/5. Communication_Data_Among_Users (1).csv'\ndata = pd.read_csv(file_path)\nprint(\"CSV file loaded.\")\n\n# Display the first few rows of the dataframe\nprint(\"First few rows of the dataframe:\")\nprint(data.head())\n\n# Extract features and target variable\nprint(\"Extracting features and target variable...\")\nX = data['Message']\ny = data['Label']\n\n# Handle missing values by filling NaNs with an empty string\nX = X.fillna(\"\")\n\n# Handle missing values by filling NaNs with the most frequent value in target\ny = y.fillna(y.mode()[0])\n\n# Convert text data to TF-IDF features\nprint(\"Converting text data to TF-IDF features...\")\nvectorizer = TfidfVectorizer()\nX_tfidf = vectorizer.fit_transform(X)\nprint(\"TF-IDF conversion completed.\")\n","metadata":{"execution":{"iopub.status.busy":"2024-06-11T12:11:14.417839Z","iopub.execute_input":"2024-06-11T12:11:14.418298Z","iopub.status.idle":"2024-06-11T12:11:16.960692Z","shell.execute_reply.started":"2024-06-11T12:11:14.418262Z","shell.execute_reply":"2024-06-11T12:11:16.959384Z"},"trusted":true},"execution_count":13,"outputs":[{"name":"stdout","text":"Loading CSV file...\nCSV file loaded.\nFirst few rows of the dataframe:\n         Date   Time  User1 ID  User2 ID  \\\n0  2021-03-04  10:17       1.0       2.0   \n1  2022-01-24  04:27       1.0       2.0   \n2  2021-02-03  02:19       1.0       2.0   \n3  2021-09-04  08:54       1.0       2.0   \n4  2021-07-21  13:15       1.0       2.0   \n\n                                             Message  Label  \n0  bye bye dear bajaj  i got some better work to ...    1.0  \n1  Haha your so funny you sit on wikipedia all da...    1.0  \n2  My problem is people talking out of their asse...    1.0  \n3                                    Article updated    0.0  \n4  Well arent you phucking special Its easy to ha...    1.0  \nExtracting features and target variable...\nConverting text data to TF-IDF features...\nTF-IDF conversion completed.\n","output_type":"stream"}]},{"cell_type":"code","source":"# Split the data into 70% training and 30% testing sets\nX_train, X_test, y_train, y_test = train_test_split(X_tfidf, y, test_size=0.3, random_state=42)\nprint(f\"Training set size: {X_train.shape[0]}\")\nprint(f\"Test set size: {X_test.shape[0]}\")\n","metadata":{"execution":{"iopub.status.busy":"2024-06-11T12:11:19.560085Z","iopub.execute_input":"2024-06-11T12:11:19.560544Z","iopub.status.idle":"2024-06-11T12:11:19.582080Z","shell.execute_reply.started":"2024-06-11T12:11:19.560504Z","shell.execute_reply":"2024-06-11T12:11:19.580761Z"},"trusted":true},"execution_count":14,"outputs":[{"name":"stdout","text":"Training set size: 27823\nTest set size: 11925\n","output_type":"stream"}]},{"cell_type":"code","source":"# Train the RandomForest model\nprint(\"Training the Random Forest model...\")\nrf_model = RandomForestClassifier()\nrf_model.fit(X_train, y_train)\nprint(\"Random Forest model trained.\")\n\n# Make predictions with RandomForest model\nprint(\"Making predictions with Random Forest model...\")\ny_pred_rf = rf_model.predict(X_test)\nprint(\"Random Forest model predictions completed.\")\n\n# Evaluate the RandomForest model\nprint(\"Evaluating the Random Forest model...\")\naccuracy_rf = accuracy_score(y_test, y_pred_rf)\nprecision_rf = precision_score(y_test, y_pred_rf, average='binary')\nrecall_rf = recall_score(y_test, y_pred_rf, average='binary')\nf1_rf = f1_score(y_test, y_pred_rf, average='binary')\nconf_matrix_rf = confusion_matrix(y_test, y_pred_rf)\n\nprint(f'Random Forest Accuracy: {accuracy_rf}')\nprint(f'Random Forest Precision: {precision_rf}')\nprint(f'Random Forest Recall: {recall_rf}')\nprint(f'Random Forest F1 Score: {f1_rf}')\nprint('Random Forest Confusion Matrix:')\nprint(conf_matrix_rf)\n\n# Define and train the Deep Learning model\nprint(\"Defining the Deep Learning model...\")\ndl_model = Sequential()\ndl_model.add(Dense(64, input_dim=X_train.shape[1], activation='relu'))\ndl_model.add(Dense(32, activation='relu'))\ndl_model.add(Dense(1, activation='sigmoid'))\n\n# Compile the Deep Learning model\nprint(\"Compiling the Deep Learning model...\")\ndl_model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])\n\n# Implement early stopping\nearly_stopping = EarlyStopping(monitor='val_loss', patience=3)\n\n# Train the Deep Learning model\nprint(\"Training the Deep Learning model...\")\ndl_model.fit(X_train.toarray(), y_train, epochs=10, batch_size=32, validation_split=0.2, callbacks=[early_stopping])\nprint(\"Deep Learning model training completed.\")\n\n# Evaluate the Deep Learning model\nprint(\"Evaluating the Deep Learning model...\")\nloss_dl, accuracy_dl = dl_model.evaluate(X_test.toarray(), y_test)\ny_pred_dl = (dl_model.predict(X_test.toarray()) > 0.5).astype(int)  # Convert probabilities to binary class\n\nprecision_dl = precision_score(y_test, y_pred_dl, average='binary')\nrecall_dl = recall_score(y_test, y_pred_dl, average='binary')\nf1_dl = f1_score(y_test, y_pred_dl, average='binary')\nconf_matrix_dl = confusion_matrix(y_test, y_pred_dl)\n\nprint(f'Neural Network Accuracy: {accuracy_dl}')\nprint(f'Neural Network Precision: {precision_dl}')\nprint(f'Neural Network Recall: {recall_dl}')\nprint(f'Neural Network F1 Score: {f1_dl}')\nprint('Neural Network Confusion Matrix:')\nprint(conf_matrix_dl)\n","metadata":{"execution":{"iopub.status.busy":"2024-06-11T12:11:21.907222Z","iopub.execute_input":"2024-06-11T12:11:21.908269Z","iopub.status.idle":"2024-06-11T12:18:07.395727Z","shell.execute_reply.started":"2024-06-11T12:11:21.908229Z","shell.execute_reply":"2024-06-11T12:18:07.394343Z"},"trusted":true},"execution_count":15,"outputs":[{"name":"stdout","text":"Training the Random Forest model...\nRandom Forest model trained.\nMaking predictions with Random Forest model...\nRandom Forest model predictions completed.\nEvaluating the Random Forest model...\nRandom Forest Accuracy: 0.8149266247379455\nRandom Forest Precision: 0.8558033451596554\nRandom Forest Recall: 0.6733798604187438\nRandom Forest F1 Score: 0.7537105233790873\nRandom Forest Confusion Matrix:\n[[6341  569]\n [1638 3377]]\nDefining the Deep Learning model...\nCompiling the Deep Learning model...\nTraining the Deep Learning model...\n","output_type":"stream"},{"name":"stderr","text":"/opt/conda/lib/python3.10/site-packages/keras/src/layers/core/dense.py:87: UserWarning: Do not pass an `input_shape`/`input_dim` argument to a layer. When using Sequential models, prefer using an `Input(shape)` object as the first layer in the model instead.\n  super().__init__(activity_regularizer=activity_regularizer, **kwargs)\n","output_type":"stream"},{"name":"stdout","text":"Epoch 1/10\n\u001b[1m696/696\u001b[0m \u001b[32m━━━━━━━━━━━━━━━━━━━━\u001b[0m\u001b[37m\u001b[0m \u001b[1m31s\u001b[0m 43ms/step - accuracy: 0.7620 - loss: 0.4851 - val_accuracy: 0.8467 - val_loss: 0.3464\nEpoch 2/10\n\u001b[1m696/696\u001b[0m \u001b[32m━━━━━━━━━━━━━━━━━━━━\u001b[0m\u001b[37m\u001b[0m \u001b[1m27s\u001b[0m 39ms/step - accuracy: 0.9459 - loss: 0.1552 - val_accuracy: 0.8390 - val_loss: 0.4071\nEpoch 3/10\n\u001b[1m696/696\u001b[0m \u001b[32m━━━━━━━━━━━━━━━━━━━━\u001b[0m\u001b[37m\u001b[0m \u001b[1m28s\u001b[0m 40ms/step - accuracy: 0.9809 - loss: 0.0644 - val_accuracy: 0.8359 - val_loss: 0.4782\nEpoch 4/10\n\u001b[1m696/696\u001b[0m \u001b[32m━━━━━━━━━━━━━━━━━━━━\u001b[0m\u001b[37m\u001b[0m \u001b[1m28s\u001b[0m 40ms/step - accuracy: 0.9926 - loss: 0.0277 - val_accuracy: 0.8341 - val_loss: 0.6104\nDeep Learning model training completed.\nEvaluating the Deep Learning model...\n\u001b[1m373/373\u001b[0m \u001b[32m━━━━━━━━━━━━━━━━━━━━\u001b[0m\u001b[37m\u001b[0m \u001b[1m4s\u001b[0m 9ms/step - accuracy: 0.8337 - loss: 0.6345\n\u001b[1m373/373\u001b[0m \u001b[32m━━━━━━━━━━━━━━━━━━━━\u001b[0m\u001b[37m\u001b[0m \u001b[1m3s\u001b[0m 8ms/step\nNeural Network Accuracy: 0.8338783979415894\nNeural Network Precision: 0.8053542673107891\nNeural Network Recall: 0.7978065802592224\nNeural Network F1 Score: 0.8015626565160773\nNeural Network Confusion Matrix:\n[[5943  967]\n [1014 4001]]\n","output_type":"stream"}]},{"cell_type":"code","source":"import pandas as pd\nfrom sklearn.feature_extraction.text import TfidfVectorizer\nfrom sklearn.ensemble import RandomForestClassifier\nfrom tensorflow.keras.models import load_model\n\n# Load the sample test messages CSV file\nprint(\"Loading sample test messages CSV file...\")\ntest_file_path = '/kaggle/input/dsafgdf/corrected_messages.csv'  # Adjust the path as necessary\ntest_data = pd.read_csv(test_file_path)\nprint(\"Sample test messages loaded.\")\n\n# Convert test messages to TF-IDF features\nprint(\"Converting test messages to TF-IDF features...\")\ntest_messages_tfidf = vectorizer.transform(test_data['message'])\nprint(\"Conversion completed.\")\n\n# Predict using the Random Forest model\nprint(\"Predicting using the Random Forest model...\")\ntest_predictions_rf = rf_model.predict(test_messages_tfidf)\nprint(\"Random Forest Predictions:\", test_predictions_rf)\n\n# Predict using the Deep Learning model\nprint(\"Predicting using the Deep Learning model...\")\ntest_predictions_dl = dl_model.predict(test_messages_tfidf.toarray())\ntest_predictions_dl = (test_predictions_dl > 0.5).astype(int)  # Convert probabilities to binary class\nprint(\"Neural Network Predictions:\", test_predictions_dl)\n","metadata":{"execution":{"iopub.status.busy":"2024-06-11T12:20:07.236007Z","iopub.execute_input":"2024-06-11T12:20:07.236526Z","iopub.status.idle":"2024-06-11T12:20:07.381918Z","shell.execute_reply.started":"2024-06-11T12:20:07.236488Z","shell.execute_reply":"2024-06-11T12:20:07.380720Z"},"trusted":true},"execution_count":18,"outputs":[{"name":"stdout","text":"Loading sample test messages CSV file...\nSample test messages loaded.\nConverting test messages to TF-IDF features...\nConversion completed.\nPredicting using the Random Forest model...\nRandom Forest Predictions: [1. 1. 0. 0. 0. 0. 1. 1. 1. 0. 1. 0. 1. 0. 1. 0. 1. 1. 1. 0. 1. 1. 1. 0.\n 1. 0. 1. 0. 1. 0.]\nPredicting using the Deep Learning model...\n\u001b[1m1/1\u001b[0m \u001b[32m━━━━━━━━━━━━━━━━━━━━\u001b[0m\u001b[37m\u001b[0m \u001b[1m0s\u001b[0m 32ms/step\nNeural Network Predictions: [[1]\n [0]\n [1]\n [1]\n [0]\n [0]\n [1]\n [0]\n [1]\n [0]\n [1]\n [0]\n [1]\n [0]\n [1]\n [0]\n [1]\n [0]\n [0]\n [0]\n [1]\n [1]\n [1]\n [0]\n [0]\n [0]\n [0]\n [0]\n [1]\n [0]]\n","output_type":"stream"}]}]}
+{
+ "cells": [
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "id": "e10c9891",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-06-12T06:05:44.146328Z",
+     "iopub.status.busy": "2024-06-12T06:05:44.145905Z",
+     "iopub.status.idle": "2024-06-12T06:06:04.555843Z",
+     "shell.execute_reply": "2024-06-12T06:06:04.553984Z"
+    },
+    "papermill": {
+     "duration": 20.4192,
+     "end_time": "2024-06-12T06:06:04.559784",
+     "exception": false,
+     "start_time": "2024-06-12T06:05:44.140584",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "2024-06-12 06:05:50.158109: E external/local_xla/xla/stream_executor/cuda/cuda_dnn.cc:9261] Unable to register cuDNN factory: Attempting to register factory for plugin cuDNN when one has already been registered\n",
+      "2024-06-12 06:05:50.158471: E external/local_xla/xla/stream_executor/cuda/cuda_fft.cc:607] Unable to register cuFFT factory: Attempting to register factory for plugin cuFFT when one has already been registered\n",
+      "2024-06-12 06:05:50.348643: E external/local_xla/xla/stream_executor/cuda/cuda_blas.cc:1515] Unable to register cuBLAS factory: Attempting to register factory for plugin cuBLAS when one has already been registered\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Loading CSV file...\n",
+      "CSV file loaded.\n",
+      "First few rows of the dataframe:\n",
+      "        Date   Time  User1 ID  User2 ID  \\\n",
+      "0   3/4/2021  10:17       1.0       2.0   \n",
+      "1  1/24/2022   4:27       1.0       2.0   \n",
+      "2   2/3/2021   2:19       1.0       2.0   \n",
+      "3   9/4/2021   8:54       1.0       2.0   \n",
+      "4  7/21/2021  13:15       1.0       2.0   \n",
+      "\n",
+      "                                             Message  Label  Unnamed: 6  \\\n",
+      "0  bye bye dear bajaj  i got some better work to ...    1.0         NaN   \n",
+      "1  Haha your so funny you sit on wikipedia all da...    1.0         NaN   \n",
+      "2  My problem is people talking out of their asse...    1.0         NaN   \n",
+      "3                                    Article updated    0.0         NaN   \n",
+      "4  Well arent you phucking special Its easy to ha...    1.0         NaN   \n",
+      "\n",
+      "   Unnamed: 7  \n",
+      "0         NaN  \n",
+      "1         NaN  \n",
+      "2         NaN  \n",
+      "3         NaN  \n",
+      "4         NaN  \n",
+      "Extracting features and target variable...\n"
+     ]
+    }
+   ],
+   "source": [
+    "import pandas as pd\n",
+    "import numpy as np\n",
+    "import joblib\n",
+    "from sklearn.model_selection import train_test_split\n",
+    "from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix\n",
+    "from sklearn.ensemble import RandomForestClassifier\n",
+    "from sklearn.svm import SVC\n",
+    "from sklearn.feature_extraction.text import TfidfVectorizer\n",
+    "import tensorflow as tf\n",
+    "from tensorflow.keras.models import Sequential\n",
+    "from tensorflow.keras.layers import Dense, GRU,Embedding, Conv1D, MaxPooling1D, Flatten\n",
+    "from tensorflow.keras.preprocessing.text import Tokenizer\n",
+    "from tensorflow.keras.preprocessing.sequence import pad_sequences\n",
+    "from tensorflow.keras.callbacks import EarlyStopping\n",
+    "\n",
+    "\n",
+    "# Load the CSV file\n",
+    "print(\"Loading CSV file...\")\n",
+    "file_path = '/kaggle/input/data-ver-4/5. Communication_Data_Among_Users punya br.csv'  # Adjust the path as necessary\n",
+    "data = pd.read_csv(file_path)\n",
+    "print(\"CSV file loaded.\")\n",
+    "\n",
+    "# Display the first few rows of the dataframe\n",
+    "print(\"First few rows of the dataframe:\")\n",
+    "print(data.head())\n",
+    "\n",
+    "# Extract features and target variable\n",
+    "print(\"Extracting features and target variable...\")\n",
+    "X = data['Message'].astype(str)\n",
+    "y = data['Label']\n",
+    "\n",
+    "# Handle missing values by filling NaNs with the most frequent value in target\n",
+    "y = y.fillna(y.mode()[0])\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "id": "4d7769bb",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-06-12T06:06:04.570195Z",
+     "iopub.status.busy": "2024-06-12T06:06:04.568639Z",
+     "iopub.status.idle": "2024-06-12T06:06:07.145525Z",
+     "shell.execute_reply": "2024-06-12T06:06:07.143814Z"
+    },
+    "papermill": {
+     "duration": 2.585575,
+     "end_time": "2024-06-12T06:06:07.149308",
+     "exception": false,
+     "start_time": "2024-06-12T06:06:04.563733",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Converting text data to TF-IDF features...\n",
+      "TF-IDF conversion completed.\n",
+      "Training set size (TF-IDF): 32483\n",
+      "Test set size (TF-IDF): 8121\n"
+     ]
+    }
+   ],
+   "source": [
+    "# Convert text data to TF-IDF features\n",
+    "print(\"Converting text data to TF-IDF features...\")\n",
+    "tfidf_vectorizer = TfidfVectorizer(max_features=30)  # Set max_features to 30\n",
+    "X_tfidf = tfidf_vectorizer.fit_transform(X).toarray()\n",
+    "print(\"TF-IDF conversion completed.\")\n",
+    "\n",
+    "X_train_tfidf, X_test_tfidf, y_train, y_test = train_test_split(X_tfidf, y, test_size=0.2, random_state=42)\n",
+    "print(f\"Training set size (TF-IDF): {X_train_tfidf.shape[0]}\")\n",
+    "print(f\"Test set size (TF-IDF): {X_test_tfidf.shape[0]}\")\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "id": "36aff29e",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-06-12T06:06:07.160512Z",
+     "iopub.status.busy": "2024-06-12T06:06:07.159143Z",
+     "iopub.status.idle": "2024-06-12T06:06:11.649122Z",
+     "shell.execute_reply": "2024-06-12T06:06:11.647905Z"
+    },
+    "papermill": {
+     "duration": 4.498162,
+     "end_time": "2024-06-12T06:06:11.651828",
+     "exception": false,
+     "start_time": "2024-06-12T06:06:07.153666",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Tokenizing the text data...\n",
+      "Padding sequences...\n",
+      "Sequences padded.\n",
+      "Training set size (Sequences): 32483\n",
+      "Test set size (Sequences): 8121\n"
+     ]
+    }
+   ],
+   "source": [
+    "# Tokenize the text data\n",
+    "print(\"Tokenizing the text data...\")\n",
+    "tokenizer = Tokenizer()\n",
+    "tokenizer.fit_on_texts(X)\n",
+    "sequences = tokenizer.texts_to_sequences(X)\n",
+    "\n",
+    "# Pad sequences to ensure uniform input length\n",
+    "print(\"Padding sequences...\")\n",
+    "max_sequence_length = 100  # Limit sequence length to 100 tokens\n",
+    "X_padded = pad_sequences(sequences, maxlen=max_sequence_length)\n",
+    "print(\"Sequences padded.\")\n",
+    "\n",
+    "X_train_seq, X_test_seq, y_train_seq, y_test_seq = train_test_split(X_padded, y, test_size=0.2, random_state=42)\n",
+    "print(f\"Training set size (Sequences): {X_train_seq.shape[0]}\")\n",
+    "print(f\"Test set size (Sequences): {X_test_seq.shape[0]}\")\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "id": "f1d5e348",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-06-12T06:06:11.661732Z",
+     "iopub.status.busy": "2024-06-12T06:06:11.661320Z",
+     "iopub.status.idle": "2024-06-12T06:06:22.474924Z",
+     "shell.execute_reply": "2024-06-12T06:06:22.473019Z"
+    },
+    "papermill": {
+     "duration": 10.821662,
+     "end_time": "2024-06-12T06:06:22.477721",
+     "exception": false,
+     "start_time": "2024-06-12T06:06:11.656059",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Training the Random Forest model...\n",
+      "Random Forest model trained.\n",
+      "Making predictions with Random Forest model...\n",
+      "Random Forest model predictions completed.\n",
+      "Evaluating the Random Forest model...\n",
+      "Random Forest Accuracy: 0.7141977588966876\n",
+      "Random Forest Precision: 0.7066427289048474\n",
+      "Random Forest Recall: 0.5668202764976958\n",
+      "Random Forest F1 Score: 0.6290554578871662\n",
+      "Random Forest Confusion Matrix:\n",
+      "[[3832  817]\n",
+      " [1504 1968]]\n"
+     ]
+    }
+   ],
+   "source": [
+    "# Train the RandomForest model\n",
+    "print(\"Training the Random Forest model...\")\n",
+    "rf_model = RandomForestClassifier()\n",
+    "rf_model.fit(X_train_tfidf, y_train)\n",
+    "print(\"Random Forest model trained.\")\n",
+    "\n",
+    "# Make predictions with RandomForest model\n",
+    "print(\"Making predictions with Random Forest model...\")\n",
+    "y_pred_rf = rf_model.predict(X_test_tfidf)\n",
+    "print(\"Random Forest model predictions completed.\")\n",
+    "\n",
+    "# Evaluate the RandomForest model\n",
+    "print(\"Evaluating the Random Forest model...\")\n",
+    "accuracy_rf = accuracy_score(y_test, y_pred_rf)\n",
+    "precision_rf = precision_score(y_test, y_pred_rf)\n",
+    "recall_rf = recall_score(y_test, y_pred_rf)\n",
+    "f1_rf = f1_score(y_test, y_pred_rf)\n",
+    "conf_matrix_rf = confusion_matrix(y_test, y_pred_rf)\n",
+    "\n",
+    "print(f'Random Forest Accuracy: {accuracy_rf}')\n",
+    "print(f'Random Forest Precision: {precision_rf}')\n",
+    "print(f'Random Forest Recall: {recall_rf}')\n",
+    "print(f'Random Forest F1 Score: {f1_rf}')\n",
+    "print('Random Forest Confusion Matrix:')\n",
+    "print(conf_matrix_rf)\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "id": "3bf40434",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-06-12T06:06:22.487929Z",
+     "iopub.status.busy": "2024-06-12T06:06:22.487432Z",
+     "iopub.status.idle": "2024-06-12T06:08:23.681551Z",
+     "shell.execute_reply": "2024-06-12T06:08:23.680093Z"
+    },
+    "papermill": {
+     "duration": 121.203249,
+     "end_time": "2024-06-12T06:08:23.685028",
+     "exception": false,
+     "start_time": "2024-06-12T06:06:22.481779",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Training the SVM model...\n",
+      "SVM model trained.\n",
+      "Making predictions with SVM model...\n",
+      "SVM model predictions completed.\n",
+      "Evaluating the SVM model...\n",
+      "SVM Accuracy: 0.7162910971555227\n",
+      "SVM Precision: 0.7279469164715067\n",
+      "SVM Recall: 0.5371543778801844\n",
+      "SVM F1 Score: 0.6181637388133908\n",
+      "SVM Confusion Matrix:\n",
+      "[[3952  697]\n",
+      " [1607 1865]]\n"
+     ]
+    }
+   ],
+   "source": [
+    "# Train the SVM model\n",
+    "print(\"Training the SVM model...\")\n",
+    "svm_model = SVC()\n",
+    "svm_model.fit(X_train_tfidf, y_train)\n",
+    "print(\"SVM model trained.\")\n",
+    "\n",
+    "# Make predictions with SVM model\n",
+    "print(\"Making predictions with SVM model...\")\n",
+    "y_pred_svm = svm_model.predict(X_test_tfidf)\n",
+    "print(\"SVM model predictions completed.\")\n",
+    "\n",
+    "# Evaluate the SVM model\n",
+    "print(\"Evaluating the SVM model...\")\n",
+    "accuracy_svm = accuracy_score(y_test, y_pred_svm)\n",
+    "precision_svm = precision_score(y_test, y_pred_svm)\n",
+    "recall_svm = recall_score(y_test, y_pred_svm)\n",
+    "f1_svm = f1_score(y_test, y_pred_svm)\n",
+    "conf_matrix_svm = confusion_matrix(y_test, y_pred_svm)\n",
+    "\n",
+    "print(f'SVM Accuracy: {accuracy_svm}')\n",
+    "print(f'SVM Precision: {precision_svm}')\n",
+    "print(f'SVM Recall: {recall_svm}')\n",
+    "print(f'SVM F1 Score: {f1_svm}')\n",
+    "print('SVM Confusion Matrix:')\n",
+    "print(conf_matrix_svm)\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 6,
+   "id": "a96104ec",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-06-12T06:08:23.695371Z",
+     "iopub.status.busy": "2024-06-12T06:08:23.695000Z",
+     "iopub.status.idle": "2024-06-12T06:09:10.900122Z",
+     "shell.execute_reply": "2024-06-12T06:09:10.898844Z"
+    },
+    "papermill": {
+     "duration": 47.213229,
+     "end_time": "2024-06-12T06:09:10.902676",
+     "exception": false,
+     "start_time": "2024-06-12T06:08:23.689447",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Defining the optimized CNN model...\n",
+      "Compiling the CNN model...\n",
+      "Training the CNN model...\n",
+      "Epoch 1/10\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "/opt/conda/lib/python3.10/site-packages/keras/src/layers/core/embedding.py:90: UserWarning: Argument `input_length` is deprecated. Just remove it.\n",
+      "  warnings.warn(\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "\u001b[1m508/508\u001b[0m \u001b[32m━━━━━━━━━━━━━━━━━━━━\u001b[0m\u001b[37m\u001b[0m \u001b[1m14s\u001b[0m 23ms/step - accuracy: 0.6932 - loss: 0.5559 - val_accuracy: 0.8602 - val_loss: 0.3285\n",
+      "Epoch 2/10\n",
+      "\u001b[1m508/508\u001b[0m \u001b[32m━━━━━━━━━━━━━━━━━━━━\u001b[0m\u001b[37m\u001b[0m \u001b[1m11s\u001b[0m 21ms/step - accuracy: 0.8945 - loss: 0.2629 - val_accuracy: 0.8585 - val_loss: 0.3639\n",
+      "Epoch 3/10\n",
+      "\u001b[1m508/508\u001b[0m \u001b[32m━━━━━━━━━━━━━━━━━━━━\u001b[0m\u001b[37m\u001b[0m \u001b[1m11s\u001b[0m 21ms/step - accuracy: 0.9472 - loss: 0.1476 - val_accuracy: 0.8533 - val_loss: 0.4632\n",
+      "Epoch 4/10\n",
+      "\u001b[1m508/508\u001b[0m \u001b[32m━━━━━━━━━━━━━━━━━━━━\u001b[0m\u001b[37m\u001b[0m \u001b[1m11s\u001b[0m 22ms/step - accuracy: 0.9774 - loss: 0.0714 - val_accuracy: 0.8493 - val_loss: 0.6176\n",
+      "CNN model training completed.\n",
+      "Evaluating the CNN model...\n",
+      "\u001b[1m127/127\u001b[0m \u001b[32m━━━━━━━━━━━━━━━━━━━━\u001b[0m\u001b[37m\u001b[0m \u001b[1m1s\u001b[0m 4ms/step - accuracy: 0.8491 - loss: 0.6268\n",
+      "\u001b[1m127/127\u001b[0m \u001b[32m━━━━━━━━━━━━━━━━━━━━\u001b[0m\u001b[37m\u001b[0m \u001b[1m1s\u001b[0m 4ms/step\n",
+      "CNN Accuracy: 0.8492796421051025\n",
+      "CNN Precision: 0.8600256245996156\n",
+      "CNN Recall: 0.7733294930875576\n",
+      "CNN F1 Score: 0.8143767060964513\n",
+      "CNN Confusion Matrix:\n",
+      "[[4212  437]\n",
+      " [ 787 2685]]\n"
+     ]
+    }
+   ],
+   "source": [
+    "# Create TensorFlow datasets for better memory management\n",
+    "train_dataset = tf.data.Dataset.from_tensor_slices((X_train_seq, y_train_seq)).batch(64)\n",
+    "test_dataset = tf.data.Dataset.from_tensor_slices((X_test_seq, y_test_seq)).batch(64)\n",
+    "\n",
+    "# Define and train the optimized CNN model\n",
+    "print(\"Defining the optimized CNN model...\")\n",
+    "vocab_size = len(tokenizer.word_index) + 1  # Adding 1 because of reserved 0 index\n",
+    "\n",
+    "cnn_model = Sequential()\n",
+    "cnn_model.add(Embedding(input_dim=vocab_size, output_dim=32, input_length=max_sequence_length))\n",
+    "cnn_model.add(Conv1D(filters=32, kernel_size=3, activation='relu'))\n",
+    "cnn_model.add(MaxPooling1D(pool_size=2))\n",
+    "cnn_model.add(Flatten())\n",
+    "cnn_model.add(Dense(16, activation='relu'))\n",
+    "cnn_model.add(Dense(1, activation='sigmoid'))\n",
+    "\n",
+    "# Compile the CNN model\n",
+    "print(\"Compiling the CNN model...\")\n",
+    "cnn_model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])\n",
+    "\n",
+    "# Implement early stopping\n",
+    "early_stopping = EarlyStopping(monitor='val_loss', patience=3)\n",
+    "\n",
+    "# Train the CNN model\n",
+    "print(\"Training the CNN model...\")\n",
+    "cnn_model.fit(train_dataset, epochs=10, validation_data=test_dataset, callbacks=[early_stopping])\n",
+    "print(\"CNN model training completed.\")\n",
+    "\n",
+    "# Evaluate the CNN model\n",
+    "print(\"Evaluating the CNN model...\")\n",
+    "loss_cnn, accuracy_cnn = cnn_model.evaluate(test_dataset)\n",
+    "y_pred_cnn_probs = cnn_model.predict(test_dataset)\n",
+    "y_pred_cnn = (y_pred_cnn_probs > 0.5).astype(int)\n",
+    "\n",
+    "# Collect predictions for calculating metrics\n",
+    "y_test_array = np.concatenate([y for x, y in test_dataset], axis=0)\n",
+    "y_pred_cnn_array = np.concatenate(y_pred_cnn, axis=0)\n",
+    "\n",
+    "precision_cnn = precision_score(y_test_array, y_pred_cnn_array)\n",
+    "recall_cnn = recall_score(y_test_array, y_pred_cnn_array)\n",
+    "f1_cnn = f1_score(y_test_array, y_pred_cnn_array)\n",
+    "conf_matrix_cnn = confusion_matrix(y_test_array, y_pred_cnn_array)\n",
+    "\n",
+    "print(f'CNN Accuracy: {accuracy_cnn}')\n",
+    "print(f'CNN Precision: {precision_cnn}')\n",
+    "print(f'CNN Recall: {recall_cnn}')\n",
+    "print(f'CNN F1 Score: {f1_cnn}')\n",
+    "print('CNN Confusion Matrix:')\n",
+    "print(conf_matrix_cnn)\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 7,
+   "id": "c356c2bb",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-06-12T06:09:11.013401Z",
+     "iopub.status.busy": "2024-06-12T06:09:11.012997Z",
+     "iopub.status.idle": "2024-06-12T06:13:53.053106Z",
+     "shell.execute_reply": "2024-06-12T06:13:53.050997Z"
+    },
+    "papermill": {
+     "duration": 282.100694,
+     "end_time": "2024-06-12T06:13:53.057135",
+     "exception": false,
+     "start_time": "2024-06-12T06:09:10.956441",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Defining the optimized RNN model...\n",
+      "Compiling the RNN model...\n",
+      "Training the RNN model...\n",
+      "Epoch 1/10\n"
+     ]
+    },
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "/opt/conda/lib/python3.10/site-packages/keras/src/layers/core/embedding.py:90: UserWarning: Argument `input_length` is deprecated. Just remove it.\n",
+      "  warnings.warn(\n"
+     ]
+    },
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "\u001b[1m508/508\u001b[0m \u001b[32m━━━━━━━━━━━━━━━━━━━━\u001b[0m\u001b[37m\u001b[0m \u001b[1m72s\u001b[0m 131ms/step - accuracy: 0.7295 - loss: 0.5058 - val_accuracy: 0.8676 - val_loss: 0.3269\n",
+      "Epoch 2/10\n",
+      "\u001b[1m508/508\u001b[0m \u001b[32m━━━━━━━━━━━━━━━━━━━━\u001b[0m\u001b[37m\u001b[0m \u001b[1m67s\u001b[0m 132ms/step - accuracy: 0.9011 - loss: 0.2475 - val_accuracy: 0.8674 - val_loss: 0.3409\n",
+      "Epoch 3/10\n",
+      "\u001b[1m508/508\u001b[0m \u001b[32m━━━━━━━━━━━━━━━━━━━━\u001b[0m\u001b[37m\u001b[0m \u001b[1m67s\u001b[0m 132ms/step - accuracy: 0.9434 - loss: 0.1579 - val_accuracy: 0.8552 - val_loss: 0.4292\n",
+      "Epoch 4/10\n",
+      "\u001b[1m508/508\u001b[0m \u001b[32m━━━━━━━━━━━━━━━━━━━━\u001b[0m\u001b[37m\u001b[0m \u001b[1m67s\u001b[0m 132ms/step - accuracy: 0.9650 - loss: 0.1031 - val_accuracy: 0.8431 - val_loss: 0.5036\n",
+      "RNN model training completed.\n",
+      "Evaluating the RNN model...\n",
+      "\u001b[1m127/127\u001b[0m \u001b[32m━━━━━━━━━━━━━━━━━━━━\u001b[0m\u001b[37m\u001b[0m \u001b[1m4s\u001b[0m 31ms/step - accuracy: 0.8438 - loss: 0.5161\n",
+      "\u001b[1m127/127\u001b[0m \u001b[32m━━━━━━━━━━━━━━━━━━━━\u001b[0m\u001b[37m\u001b[0m \u001b[1m5s\u001b[0m 36ms/step\n",
+      "RNN Accuracy: 0.8431227803230286\n",
+      "RNN Precision: 0.8118615209988649\n",
+      "RNN Recall: 0.824020737327189\n",
+      "RNN F1 Score: 0.8178959405374499\n",
+      "RNN Confusion Matrix:\n",
+      "[[3986  663]\n",
+      " [ 611 2861]]\n"
+     ]
+    }
+   ],
+   "source": [
+    "# Create TensorFlow datasets for better memory management\n",
+    "train_dataset = tf.data.Dataset.from_tensor_slices((X_train_seq, y_train_seq)).batch(64)\n",
+    "test_dataset = tf.data.Dataset.from_tensor_slices((X_test_seq, y_test_seq)).batch(64)\n",
+    "# Define and train the optimized RNN model\n",
+    "print(\"Defining the optimized RNN model...\")\n",
+    "vocab_size = len(tokenizer.word_index) + 1  # Adding 1 because of reserved 0 index\n",
+    "\n",
+    "rnn_model = Sequential()\n",
+    "rnn_model.add(Embedding(input_dim=vocab_size, output_dim=32, input_length=max_sequence_length))\n",
+    "rnn_model.add(GRU(32, return_sequences=True))\n",
+    "rnn_model.add(GRU(32))\n",
+    "rnn_model.add(Dense(16, activation='relu'))\n",
+    "rnn_model.add(Dense(1, activation='sigmoid'))\n",
+    "\n",
+    "# Compile the RNN model\n",
+    "print(\"Compiling the RNN model...\")\n",
+    "rnn_model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])\n",
+    "\n",
+    "# Implement early stopping\n",
+    "early_stopping = EarlyStopping(monitor='val_loss', patience=3)\n",
+    "\n",
+    "# Train the RNN model\n",
+    "print(\"Training the RNN model...\")\n",
+    "rnn_model.fit(train_dataset, epochs=10, validation_data=test_dataset, callbacks=[early_stopping])\n",
+    "print(\"RNN model training completed.\")\n",
+    "\n",
+    "# Evaluate the RNN model\n",
+    "print(\"Evaluating the RNN model...\")\n",
+    "loss_rnn, accuracy_rnn = rnn_model.evaluate(test_dataset)\n",
+    "y_pred_rnn_probs = rnn_model.predict(test_dataset)\n",
+    "y_pred_rnn = (y_pred_rnn_probs > 0.5).astype(int)\n",
+    "\n",
+    "# Collect predictions for calculating metrics\n",
+    "y_test_array = np.concatenate([y for x, y in test_dataset], axis=0)\n",
+    "y_pred_rnn_array = np.concatenate(y_pred_rnn, axis=0)\n",
+    "\n",
+    "precision_rnn = precision_score(y_test_array, y_pred_rnn_array)\n",
+    "recall_rnn = recall_score(y_test_array, y_pred_rnn_array)\n",
+    "f1_rnn = f1_score(y_test_array, y_pred_rnn_array)\n",
+    "conf_matrix_rnn = confusion_matrix(y_test_array, y_pred_rnn_array)\n",
+    "\n",
+    "print(f'RNN Accuracy: {accuracy_rnn}')\n",
+    "print(f'RNN Precision: {precision_rnn}')\n",
+    "print(f'RNN Recall: {recall_rnn}')\n",
+    "print(f'RNN F1 Score: {f1_rnn}')\n",
+    "print('RNN Confusion Matrix:')\n",
+    "print(conf_matrix_rnn)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 8,
+   "id": "a49a70e5",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2024-06-12T06:13:53.477050Z",
+     "iopub.status.busy": "2024-06-12T06:13:53.476617Z",
+     "iopub.status.idle": "2024-06-12T06:13:53.483589Z",
+     "shell.execute_reply": "2024-06-12T06:13:53.481980Z"
+    },
+    "papermill": {
+     "duration": 0.215992,
+     "end_time": "2024-06-12T06:13:53.486140",
+     "exception": false,
+     "start_time": "2024-06-12T06:13:53.270148",
+     "status": "completed"
+    },
+    "tags": []
+   },
+   "outputs": [],
+   "source": [
+    "# import pandas as pd\n",
+    "# from sklearn.feature_extraction.text import TfidfVectorizer\n",
+    "# from sklearn.ensemble import RandomForestClassifier\n",
+    "# from tensorflow.keras.models import load_model\n",
+    "\n",
+    "# # Load the sample test messages CSV file\n",
+    "# print(\"Loading sample test messages CSV file...\")\n",
+    "# test_file_path = '/kaggle/input/dsafgdf/corrected_messages.csv'  # Adjust the path as necessary\n",
+    "# test_data = pd.read_csv(test_file_path)\n",
+    "# print(\"Sample test messages loaded.\")\n",
+    "\n",
+    "# # Convert test messages to TF-IDF features\n",
+    "# print(\"Converting test messages to TF-IDF features...\")\n",
+    "# test_messages_tfidf = vectorizer.transform(test_data['message'])\n",
+    "# print(\"Conversion completed.\")\n",
+    "\n",
+    "# # Predict using the Random Forest model\n",
+    "# print(\"Predicting using the Random Forest model...\")\n",
+    "# test_predictions_rf = rf_model.predict(test_messages_tfidf)\n",
+    "# print(\"Random Forest Predictions:\", test_predictions_rf)\n",
+    "\n",
+    "# # Predict using the Deep Learning model\n",
+    "# print(\"Predicting using the Deep Learning model...\")\n",
+    "# test_predictions_dl = dl_model.predict(test_messages_tfidf.toarray())\n",
+    "# test_predictions_dl = (test_predictions_dl > 0.5).astype(int)  # Convert probabilities to binary class\n",
+    "# print(\"Neural Network Predictions:\", test_predictions_dl)\n"
+   ]
+  }
+ ],
+ "metadata": {
+  "kaggle": {
+   "accelerator": "none",
+   "dataSources": [
+    {
+     "datasetId": 5191764,
+     "sourceId": 8664416,
+     "sourceType": "datasetVersion"
+    },
+    {
+     "datasetId": 5193783,
+     "sourceId": 8667041,
+     "sourceType": "datasetVersion"
+    }
+   ],
+   "dockerImageVersionId": 30732,
+   "isGpuEnabled": false,
+   "isInternetEnabled": false,
+   "language": "python",
+   "sourceType": "notebook"
+  },
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.10.13"
+  },
+  "papermill": {
+   "default_parameters": {},
+   "duration": 495.53125,
+   "end_time": "2024-06-12T06:13:56.529765",
+   "environment_variables": {},
+   "exception": null,
+   "input_path": "__notebook__.ipynb",
+   "output_path": "__notebook__.ipynb",
+   "parameters": {},
+   "start_time": "2024-06-12T06:05:40.998515",
+   "version": "2.5.0"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}

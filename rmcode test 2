@@ -3,19 +3,19 @@
   {
    "cell_type": "code",
    "execution_count": 1,
-   "id": "e10c9891",
+   "id": "de8783e9",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2024-06-12T06:05:44.146328Z",
-     "iopub.status.busy": "2024-06-12T06:05:44.145905Z",
-     "iopub.status.idle": "2024-06-12T06:06:04.555843Z",
-     "shell.execute_reply": "2024-06-12T06:06:04.553984Z"
+     "iopub.execute_input": "2024-06-13T13:45:55.054080Z",
+     "iopub.status.busy": "2024-06-13T13:45:55.053623Z",
+     "iopub.status.idle": "2024-06-13T13:46:12.392500Z",
+     "shell.execute_reply": "2024-06-13T13:46:12.391030Z"
     },
     "papermill": {
-     "duration": 20.4192,
-     "end_time": "2024-06-12T06:06:04.559784",
+     "duration": 17.348203,
+     "end_time": "2024-06-13T13:46:12.395166",
      "exception": false,
-     "start_time": "2024-06-12T06:05:44.140584",
+     "start_time": "2024-06-13T13:45:55.046963",
      "status": "completed"
     },
     "tags": []
@@ -25,9 +25,9 @@
      "name": "stderr",
      "output_type": "stream",
      "text": [
-      "2024-06-12 06:05:50.158109: E external/local_xla/xla/stream_executor/cuda/cuda_dnn.cc:9261] Unable to register cuDNN factory: Attempting to register factory for plugin cuDNN when one has already been registered\n",
-      "2024-06-12 06:05:50.158471: E external/local_xla/xla/stream_executor/cuda/cuda_fft.cc:607] Unable to register cuFFT factory: Attempting to register factory for plugin cuFFT when one has already been registered\n",
-      "2024-06-12 06:05:50.348643: E external/local_xla/xla/stream_executor/cuda/cuda_blas.cc:1515] Unable to register cuBLAS factory: Attempting to register factory for plugin cuBLAS when one has already been registered\n"
+      "2024-06-13 13:45:59.978348: E external/local_xla/xla/stream_executor/cuda/cuda_dnn.cc:9261] Unable to register cuDNN factory: Attempting to register factory for plugin cuDNN when one has already been registered\n",
+      "2024-06-13 13:45:59.978502: E external/local_xla/xla/stream_executor/cuda/cuda_fft.cc:607] Unable to register cuFFT factory: Attempting to register factory for plugin cuFFT when one has already been registered\n",
+      "2024-06-13 13:46:00.151681: E external/local_xla/xla/stream_executor/cuda/cuda_blas.cc:1515] Unable to register cuBLAS factory: Attempting to register factory for plugin cuBLAS when one has already been registered\n"
      ]
     },
     {
@@ -65,6 +65,7 @@
     "import pandas as pd\n",
     "import numpy as np\n",
     "import joblib\n",
+    "import time\n",
     "from sklearn.model_selection import train_test_split\n",
     "from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, confusion_matrix\n",
     "from sklearn.ensemble import RandomForestClassifier\n",
@@ -100,19 +101,19 @@
   {
    "cell_type": "code",
    "execution_count": 2,
-   "id": "4d7769bb",
+   "id": "aaa5ddcb",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2024-06-12T06:06:04.570195Z",
-     "iopub.status.busy": "2024-06-12T06:06:04.568639Z",
-     "iopub.status.idle": "2024-06-12T06:06:07.145525Z",
-     "shell.execute_reply": "2024-06-12T06:06:07.143814Z"
+     "iopub.execute_input": "2024-06-13T13:46:12.406569Z",
+     "iopub.status.busy": "2024-06-13T13:46:12.406109Z",
+     "iopub.status.idle": "2024-06-13T13:46:15.565416Z",
+     "shell.execute_reply": "2024-06-13T13:46:15.564037Z"
     },
     "papermill": {
-     "duration": 2.585575,
-     "end_time": "2024-06-12T06:06:07.149308",
+     "duration": 3.167992,
+     "end_time": "2024-06-13T13:46:15.568205",
      "exception": false,
-     "start_time": "2024-06-12T06:06:04.563733",
+     "start_time": "2024-06-13T13:46:12.400213",
      "status": "completed"
     },
     "tags": []
@@ -144,19 +145,19 @@
   {
    "cell_type": "code",
    "execution_count": 3,
-   "id": "36aff29e",
+   "id": "5dc86639",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2024-06-12T06:06:07.160512Z",
-     "iopub.status.busy": "2024-06-12T06:06:07.159143Z",
-     "iopub.status.idle": "2024-06-12T06:06:11.649122Z",
-     "shell.execute_reply": "2024-06-12T06:06:11.647905Z"
+     "iopub.execute_input": "2024-06-13T13:46:15.582271Z",
+     "iopub.status.busy": "2024-06-13T13:46:15.581139Z",
+     "iopub.status.idle": "2024-06-13T13:46:20.678282Z",
+     "shell.execute_reply": "2024-06-13T13:46:20.676901Z"
     },
     "papermill": {
-     "duration": 4.498162,
-     "end_time": "2024-06-12T06:06:11.651828",
+     "duration": 5.106155,
+     "end_time": "2024-06-13T13:46:20.681072",
      "exception": false,
-     "start_time": "2024-06-12T06:06:07.153666",
+     "start_time": "2024-06-13T13:46:15.574917",
      "status": "completed"
     },
     "tags": []
@@ -195,19 +196,19 @@
   {
    "cell_type": "code",
    "execution_count": 4,
-   "id": "f1d5e348",
+   "id": "d2c9ce66",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2024-06-12T06:06:11.661732Z",
-     "iopub.status.busy": "2024-06-12T06:06:11.661320Z",
-     "iopub.status.idle": "2024-06-12T06:06:22.474924Z",
-     "shell.execute_reply": "2024-06-12T06:06:22.473019Z"
+     "iopub.execute_input": "2024-06-13T13:46:20.693485Z",
+     "iopub.status.busy": "2024-06-13T13:46:20.693101Z",
+     "iopub.status.idle": "2024-06-13T13:46:30.429956Z",
+     "shell.execute_reply": "2024-06-13T13:46:30.428609Z"
     },
     "papermill": {
-     "duration": 10.821662,
-     "end_time": "2024-06-12T06:06:22.477721",
+     "duration": 9.746564,
+     "end_time": "2024-06-13T13:46:30.432694",
      "exception": false,
-     "start_time": "2024-06-12T06:06:11.656059",
+     "start_time": "2024-06-13T13:46:20.686130",
      "status": "completed"
     },
     "tags": []
@@ -219,30 +220,44 @@
      "text": [
       "Training the Random Forest model...\n",
       "Random Forest model trained.\n",
+      "Training time: 9.487212657928467 seconds\n",
       "Making predictions with Random Forest model...\n",
       "Random Forest model predictions completed.\n",
+      "Random Forest number of trees: 100\n",
+      "Random Forest average tree depth: 63.90\n",
       "Evaluating the Random Forest model...\n",
-      "Random Forest Accuracy: 0.7141977588966876\n",
-      "Random Forest Precision: 0.7066427289048474\n",
-      "Random Forest Recall: 0.5668202764976958\n",
-      "Random Forest F1 Score: 0.6290554578871662\n",
+      "Random Forest Accuracy: 0.7123506957271272\n",
+      "Random Forest Precision: 0.7066957787481805\n",
+      "Random Forest Recall: 0.559331797235023\n",
+      "Random Forest F1 Score: 0.6244372990353697\n",
       "Random Forest Confusion Matrix:\n",
-      "[[3832  817]\n",
-      " [1504 1968]]\n"
+      "[[3843  806]\n",
+      " [1530 1942]]\n"
      ]
     }
    ],
    "source": [
     "# Train the RandomForest model\n",
     "print(\"Training the Random Forest model...\")\n",
+    "start_time = time.time()\n",
     "rf_model = RandomForestClassifier()\n",
     "rf_model.fit(X_train_tfidf, y_train)\n",
+    "end_time = time.time()\n",
+    "training_time = end_time - start_time \n",
     "print(\"Random Forest model trained.\")\n",
+    "print(f\"Training time: {training_time} seconds\")\n",
     "\n",
     "# Make predictions with RandomForest model\n",
     "print(\"Making predictions with Random Forest model...\")\n",
     "y_pred_rf = rf_model.predict(X_test_tfidf)\n",
     "print(\"Random Forest model predictions completed.\")\n",
+    "\n",
+    "num_trees = len(rf_model.estimators_)\n",
+    "tree_depths = [estimator.tree_.max_depth for estimator in rf_model.estimators_]\n",
+    "average_tree_depth = np.mean(tree_depths)\n",
+    "print(f\"Random Forest number of trees: {num_trees}\")\n",
+    "print(f\"Random Forest average tree depth: {average_tree_depth:.2f}\")\n",
+    "\n",
     "\n",
     "# Evaluate the RandomForest model\n",
     "print(\"Evaluating the Random Forest model...\")\n",
@@ -263,19 +278,19 @@
   {
    "cell_type": "code",
    "execution_count": 5,
-   "id": "3bf40434",
+   "id": "03065f7d",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2024-06-12T06:06:22.487929Z",
-     "iopub.status.busy": "2024-06-12T06:06:22.487432Z",
-     "iopub.status.idle": "2024-06-12T06:08:23.681551Z",
-     "shell.execute_reply": "2024-06-12T06:08:23.680093Z"
+     "iopub.execute_input": "2024-06-13T13:46:30.445108Z",
+     "iopub.status.busy": "2024-06-13T13:46:30.444669Z",
+     "iopub.status.idle": "2024-06-13T13:48:00.902687Z",
+     "shell.execute_reply": "2024-06-13T13:48:00.901002Z"
     },
     "papermill": {
-     "duration": 121.203249,
-     "end_time": "2024-06-12T06:08:23.685028",
+     "duration": 90.467305,
+     "end_time": "2024-06-13T13:48:00.905410",
      "exception": false,
-     "start_time": "2024-06-12T06:06:22.481779",
+     "start_time": "2024-06-13T13:46:30.438105",
      "status": "completed"
     },
     "tags": []
@@ -287,6 +302,8 @@
      "text": [
       "Training the SVM model...\n",
       "SVM model trained.\n",
+      "Training time: 77.0841224193573 seconds\n",
+      "SVM number of support vectors: 20714\n",
       "Making predictions with SVM model...\n",
       "SVM model predictions completed.\n",
       "Evaluating the SVM model...\n",
@@ -303,9 +320,16 @@
    "source": [
     "# Train the SVM model\n",
     "print(\"Training the SVM model...\")\n",
+    "start_time = time.time()\n",
     "svm_model = SVC()\n",
     "svm_model.fit(X_train_tfidf, y_train)\n",
+    "end_time = time.time()\n",
+    "training_time = end_time - start_time \n",
     "print(\"SVM model trained.\")\n",
+    "print(f\"Training time: {training_time} seconds\")\n",
+    "\n",
+    "num_support_vectors = len(svm_model.support_vectors_)\n",
+    "print(f\"SVM number of support vectors: {num_support_vectors}\")\n",
     "\n",
     "# Make predictions with SVM model\n",
     "print(\"Making predictions with SVM model...\")\n",
@@ -331,19 +355,19 @@
   {
    "cell_type": "code",
    "execution_count": 6,
-   "id": "a96104ec",
+   "id": "f7cfa799",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2024-06-12T06:08:23.695371Z",
-     "iopub.status.busy": "2024-06-12T06:08:23.695000Z",
-     "iopub.status.idle": "2024-06-12T06:09:10.900122Z",
-     "shell.execute_reply": "2024-06-12T06:09:10.898844Z"
+     "iopub.execute_input": "2024-06-13T13:48:00.918448Z",
+     "iopub.status.busy": "2024-06-13T13:48:00.918025Z",
+     "iopub.status.idle": "2024-06-13T13:48:43.609539Z",
+     "shell.execute_reply": "2024-06-13T13:48:43.608279Z"
     },
     "papermill": {
-     "duration": 47.213229,
-     "end_time": "2024-06-12T06:09:10.902676",
+     "duration": 42.701697,
+     "end_time": "2024-06-13T13:48:43.612571",
      "exception": false,
-     "start_time": "2024-06-12T06:08:23.689447",
+     "start_time": "2024-06-13T13:48:00.910874",
      "status": "completed"
     },
     "tags": []
@@ -371,24 +395,26 @@
      "name": "stdout",
      "output_type": "stream",
      "text": [
-      "\u001b[1m508/508\u001b[0m \u001b[32m━━━━━━━━━━━━━━━━━━━━\u001b[0m\u001b[37m\u001b[0m \u001b[1m14s\u001b[0m 23ms/step - accuracy: 0.6932 - loss: 0.5559 - val_accuracy: 0.8602 - val_loss: 0.3285\n",
+      "\u001b[1m508/508\u001b[0m \u001b[32m━━━━━━━━━━━━━━━━━━━━\u001b[0m\u001b[37m\u001b[0m \u001b[1m12s\u001b[0m 20ms/step - accuracy: 0.7130 - loss: 0.5294 - val_accuracy: 0.8609 - val_loss: 0.3269\n",
       "Epoch 2/10\n",
-      "\u001b[1m508/508\u001b[0m \u001b[32m━━━━━━━━━━━━━━━━━━━━\u001b[0m\u001b[37m\u001b[0m \u001b[1m11s\u001b[0m 21ms/step - accuracy: 0.8945 - loss: 0.2629 - val_accuracy: 0.8585 - val_loss: 0.3639\n",
+      "\u001b[1m508/508\u001b[0m \u001b[32m━━━━━━━━━━━━━━━━━━━━\u001b[0m\u001b[37m\u001b[0m \u001b[1m10s\u001b[0m 19ms/step - accuracy: 0.9000 - loss: 0.2486 - val_accuracy: 0.8604 - val_loss: 0.3659\n",
       "Epoch 3/10\n",
-      "\u001b[1m508/508\u001b[0m \u001b[32m━━━━━━━━━━━━━━━━━━━━\u001b[0m\u001b[37m\u001b[0m \u001b[1m11s\u001b[0m 21ms/step - accuracy: 0.9472 - loss: 0.1476 - val_accuracy: 0.8533 - val_loss: 0.4632\n",
+      "\u001b[1m508/508\u001b[0m \u001b[32m━━━━━━━━━━━━━━━━━━━━\u001b[0m\u001b[37m\u001b[0m \u001b[1m10s\u001b[0m 19ms/step - accuracy: 0.9505 - loss: 0.1367 - val_accuracy: 0.8484 - val_loss: 0.4918\n",
       "Epoch 4/10\n",
-      "\u001b[1m508/508\u001b[0m \u001b[32m━━━━━━━━━━━━━━━━━━━━\u001b[0m\u001b[37m\u001b[0m \u001b[1m11s\u001b[0m 22ms/step - accuracy: 0.9774 - loss: 0.0714 - val_accuracy: 0.8493 - val_loss: 0.6176\n",
+      "\u001b[1m508/508\u001b[0m \u001b[32m━━━━━━━━━━━━━━━━━━━━\u001b[0m\u001b[37m\u001b[0m \u001b[1m10s\u001b[0m 20ms/step - accuracy: 0.9802 - loss: 0.0651 - val_accuracy: 0.8415 - val_loss: 0.6443\n",
       "CNN model training completed.\n",
+      "Training time: 41.42422127723694 seconds\n",
+      "CNN number of parameters: 2800865\n",
       "Evaluating the CNN model...\n",
-      "\u001b[1m127/127\u001b[0m \u001b[32m━━━━━━━━━━━━━━━━━━━━\u001b[0m\u001b[37m\u001b[0m \u001b[1m1s\u001b[0m 4ms/step - accuracy: 0.8491 - loss: 0.6268\n",
+      "\u001b[1m127/127\u001b[0m \u001b[32m━━━━━━━━━━━━━━━━━━━━\u001b[0m\u001b[37m\u001b[0m \u001b[1m0s\u001b[0m 3ms/step - accuracy: 0.8436 - loss: 0.6534\n",
       "\u001b[1m127/127\u001b[0m \u001b[32m━━━━━━━━━━━━━━━━━━━━\u001b[0m\u001b[37m\u001b[0m \u001b[1m1s\u001b[0m 4ms/step\n",
-      "CNN Accuracy: 0.8492796421051025\n",
-      "CNN Precision: 0.8600256245996156\n",
-      "CNN Recall: 0.7733294930875576\n",
-      "CNN F1 Score: 0.8143767060964513\n",
+      "CNN Accuracy: 0.8415219783782959\n",
+      "CNN Precision: 0.8498238872878643\n",
+      "CNN Recall: 0.7644009216589862\n",
+      "CNN F1 Score: 0.8048521607278241\n",
       "CNN Confusion Matrix:\n",
-      "[[4212  437]\n",
-      " [ 787 2685]]\n"
+      "[[4180  469]\n",
+      " [ 818 2654]]\n"
      ]
     }
    ],
@@ -418,8 +444,15 @@
     "\n",
     "# Train the CNN model\n",
     "print(\"Training the CNN model...\")\n",
+    "start_time = time.time()\n",
     "cnn_model.fit(train_dataset, epochs=10, validation_data=test_dataset, callbacks=[early_stopping])\n",
+    "end_time = time.time()\n",
+    "training_time = end_time - start_time\n",
     "print(\"CNN model training completed.\")\n",
+    "print(f\"Training time: {training_time} seconds\")\n",
+    "\n",
+    "cnn_model_size = cnn_model.count_params()\n",
+    "print(f\"CNN number of parameters: {cnn_model_size}\")\n",
     "\n",
     "# Evaluate the CNN model\n",
     "print(\"Evaluating the CNN model...\")\n",
@@ -447,19 +480,19 @@
   {
    "cell_type": "code",
    "execution_count": 7,
-   "id": "c356c2bb",
+   "id": "0f55e799",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2024-06-12T06:09:11.013401Z",
-     "iopub.status.busy": "2024-06-12T06:09:11.012997Z",
-     "iopub.status.idle": "2024-06-12T06:13:53.053106Z",
-     "shell.execute_reply": "2024-06-12T06:13:53.050997Z"
+     "iopub.execute_input": "2024-06-13T13:48:43.763160Z",
+     "iopub.status.busy": "2024-06-13T13:48:43.762671Z",
+     "iopub.status.idle": "2024-06-13T13:52:49.709070Z",
+     "shell.execute_reply": "2024-06-13T13:52:49.707633Z"
     },
     "papermill": {
-     "duration": 282.100694,
-     "end_time": "2024-06-12T06:13:53.057135",
+     "duration": 246.02415,
+     "end_time": "2024-06-13T13:52:49.711578",
      "exception": false,
-     "start_time": "2024-06-12T06:09:10.956441",
+     "start_time": "2024-06-13T13:48:43.687428",
      "status": "completed"
     },
     "tags": []
@@ -487,24 +520,26 @@
      "name": "stdout",
      "output_type": "stream",
      "text": [
-      "\u001b[1m508/508\u001b[0m \u001b[32m━━━━━━━━━━━━━━━━━━━━\u001b[0m\u001b[37m\u001b[0m \u001b[1m72s\u001b[0m 131ms/step - accuracy: 0.7295 - loss: 0.5058 - val_accuracy: 0.8676 - val_loss: 0.3269\n",
+      "\u001b[1m508/508\u001b[0m \u001b[32m━━━━━━━━━━━━━━━━━━━━\u001b[0m\u001b[37m\u001b[0m \u001b[1m64s\u001b[0m 116ms/step - accuracy: 0.7326 - loss: 0.5042 - val_accuracy: 0.8686 - val_loss: 0.3223\n",
       "Epoch 2/10\n",
-      "\u001b[1m508/508\u001b[0m \u001b[32m━━━━━━━━━━━━━━━━━━━━\u001b[0m\u001b[37m\u001b[0m \u001b[1m67s\u001b[0m 132ms/step - accuracy: 0.9011 - loss: 0.2475 - val_accuracy: 0.8674 - val_loss: 0.3409\n",
+      "\u001b[1m508/508\u001b[0m \u001b[32m━━━━━━━━━━━━━━━━━━━━\u001b[0m\u001b[37m\u001b[0m \u001b[1m58s\u001b[0m 114ms/step - accuracy: 0.9045 - loss: 0.2439 - val_accuracy: 0.8645 - val_loss: 0.3392\n",
       "Epoch 3/10\n",
-      "\u001b[1m508/508\u001b[0m \u001b[32m━━━━━━━━━━━━━━━━━━━━\u001b[0m\u001b[37m\u001b[0m \u001b[1m67s\u001b[0m 132ms/step - accuracy: 0.9434 - loss: 0.1579 - val_accuracy: 0.8552 - val_loss: 0.4292\n",
+      "\u001b[1m508/508\u001b[0m \u001b[32m━━━━━━━━━━━━━━━━━━━━\u001b[0m\u001b[37m\u001b[0m \u001b[1m58s\u001b[0m 115ms/step - accuracy: 0.9449 - loss: 0.1530 - val_accuracy: 0.8487 - val_loss: 0.4471\n",
       "Epoch 4/10\n",
-      "\u001b[1m508/508\u001b[0m \u001b[32m━━━━━━━━━━━━━━━━━━━━\u001b[0m\u001b[37m\u001b[0m \u001b[1m67s\u001b[0m 132ms/step - accuracy: 0.9650 - loss: 0.1031 - val_accuracy: 0.8431 - val_loss: 0.5036\n",
+      "\u001b[1m508/508\u001b[0m \u001b[32m━━━━━━━━━━━━━━━━━━━━\u001b[0m\u001b[37m\u001b[0m \u001b[1m58s\u001b[0m 114ms/step - accuracy: 0.9655 - loss: 0.0972 - val_accuracy: 0.8423 - val_loss: 0.5917\n",
       "RNN model training completed.\n",
+      "Training time: 238.24899101257324 seconds\n",
+      "RNN number of parameters: 2785857\n",
       "Evaluating the RNN model...\n",
-      "\u001b[1m127/127\u001b[0m \u001b[32m━━━━━━━━━━━━━━━━━━━━\u001b[0m\u001b[37m\u001b[0m \u001b[1m4s\u001b[0m 31ms/step - accuracy: 0.8438 - loss: 0.5161\n",
-      "\u001b[1m127/127\u001b[0m \u001b[32m━━━━━━━━━━━━━━━━━━━━\u001b[0m\u001b[37m\u001b[0m \u001b[1m5s\u001b[0m 36ms/step\n",
-      "RNN Accuracy: 0.8431227803230286\n",
-      "RNN Precision: 0.8118615209988649\n",
-      "RNN Recall: 0.824020737327189\n",
-      "RNN F1 Score: 0.8178959405374499\n",
+      "\u001b[1m127/127\u001b[0m \u001b[32m━━━━━━━━━━━━━━━━━━━━\u001b[0m\u001b[37m\u001b[0m \u001b[1m3s\u001b[0m 27ms/step - accuracy: 0.8447 - loss: 0.6008\n",
+      "\u001b[1m127/127\u001b[0m \u001b[32m━━━━━━━━━━━━━━━━━━━━\u001b[0m\u001b[37m\u001b[0m \u001b[1m4s\u001b[0m 29ms/step\n",
+      "RNN Accuracy: 0.8422607779502869\n",
+      "RNN Precision: 0.851685393258427\n",
+      "RNN Recall: 0.7641129032258065\n",
+      "RNN F1 Score: 0.8055260361317748\n",
       "RNN Confusion Matrix:\n",
-      "[[3986  663]\n",
-      " [ 611 2861]]\n"
+      "[[4187  462]\n",
+      " [ 819 2653]]\n"
      ]
     }
    ],
@@ -532,8 +567,15 @@
     "\n",
     "# Train the RNN model\n",
     "print(\"Training the RNN model...\")\n",
+    "start_time = time.time()\n",
     "rnn_model.fit(train_dataset, epochs=10, validation_data=test_dataset, callbacks=[early_stopping])\n",
+    "end_time = time.time()\n",
+    "training_time = end_time - start_time\n",
     "print(\"RNN model training completed.\")\n",
+    "print(f\"Training time: {training_time} seconds\")\n",
+    "\n",
+    "rnn_model_size = rnn_model.count_params()\n",
+    "print(f\"RNN number of parameters: {rnn_model_size}\")\n",
     "\n",
     "# Evaluate the RNN model\n",
     "print(\"Evaluating the RNN model...\")\n",
@@ -561,19 +603,19 @@
   {
    "cell_type": "code",
    "execution_count": 8,
-   "id": "a49a70e5",
+   "id": "bd933e08",
    "metadata": {
     "execution": {
-     "iopub.execute_input": "2024-06-12T06:13:53.477050Z",
-     "iopub.status.busy": "2024-06-12T06:13:53.476617Z",
-     "iopub.status.idle": "2024-06-12T06:13:53.483589Z",
-     "shell.execute_reply": "2024-06-12T06:13:53.481980Z"
+     "iopub.execute_input": "2024-06-13T13:52:50.323803Z",
+     "iopub.status.busy": "2024-06-13T13:52:50.323363Z",
+     "iopub.status.idle": "2024-06-13T13:52:50.330201Z",
+     "shell.execute_reply": "2024-06-13T13:52:50.328872Z"
     },
     "papermill": {
-     "duration": 0.215992,
-     "end_time": "2024-06-12T06:13:53.486140",
+     "duration": 0.301267,
+     "end_time": "2024-06-13T13:52:50.332810",
      "exception": false,
-     "start_time": "2024-06-12T06:13:53.270148",
+     "start_time": "2024-06-13T13:52:50.031543",
      "status": "completed"
     },
     "tags": []
@@ -649,14 +691,14 @@
   },
   "papermill": {
    "default_parameters": {},
-   "duration": 495.53125,
-   "end_time": "2024-06-12T06:13:56.529765",
+   "duration": 421.75838,
+   "end_time": "2024-06-13T13:52:53.332395",
    "environment_variables": {},
    "exception": null,
    "input_path": "__notebook__.ipynb",
    "output_path": "__notebook__.ipynb",
    "parameters": {},
-   "start_time": "2024-06-12T06:05:40.998515",
+   "start_time": "2024-06-13T13:45:51.574015",
    "version": "2.5.0"
   }
  },
